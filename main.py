@@ -69,7 +69,7 @@ def main():
             messages.append(types.Content(role="user", parts=function_results))
                     
         else:
-            print("Final response: " + response.text)
+            print("Final response: " + (response.text or "No text response"))
             result_achieved = True
             break
                     
