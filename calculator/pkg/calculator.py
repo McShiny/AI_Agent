@@ -24,9 +24,12 @@ class Calculator:
     def _evaluate_infix(self, tokens):
         values = []
         operators = []
+        expect_number = True  # Start by expecting a number
 
         for token in tokens:
             if token in self.operators:
+                if expect_number:
+                    raise ValueError(f"invalid expression: unexpected operator '{token}'")
                 while (
                     operators
                     and operators[-1] in self.operators
@@ -34,11 +37,21 @@ class Calculator:
                 ):
                     self._apply_operator(operators, values)
                 operators.append(token)
+                expect_number = True  # After an operator, expect a number
             else:
+                if not expect_number:
+                    raise ValueError(f"invalid expression: unexpected number '{token}'")
                 try:
                     values.append(float(token))
                 except ValueError:
                     raise ValueError(f"invalid token: {token}")
+                expect_number = False  # After a number, expect an operator
+
+        # After processing all tokens, if we are still expecting a number,
+        # it means the expression ended with an operator or was empty.
+        # If it ended with an operator, it's an error.
+        if expect_number and tokens:
+            raise ValueError("invalid expression: ends with an operator")
 
         while operators:
             self._apply_operator(operators, values)
@@ -58,4 +71,6 @@ class Calculator:
 
         b = values.pop()
         a = values.pop()
+        if operator == "/" and b == 0:
+            raise ValueError("float division by zero")
         values.append(self.operators[operator](a, b))
