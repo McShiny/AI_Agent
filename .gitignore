@@ -9,7 +9,4 @@ wheels/
 # Virtual environments
 .venv
 
-# keys
-.env
-.env
 .env
